@@ -7,7 +7,14 @@
       "Bash(git init *)",
       "Bash(gh repo *)",
       "Bash(git branch *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(git pull *)",
+      "Bash(git stash *)",
+      "Bash(gh run *)",
+      "Bash(huggingface-cli whoami *)",
+      "Read(//c/Users/ASUS/.huggingface/**)",
+      "Read(//c/Users/ASUS/.cache/huggingface/**)",
+      "Bash(gh secret *)"
     ]
   }
 }

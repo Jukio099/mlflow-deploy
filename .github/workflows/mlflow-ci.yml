@@ -1,20 +1,21 @@
-name: MLflow CI/CD Pipeline
+name: Continuous Integration
 
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: write
+permissions: write-all
 
 jobs:
-  ml_pipeline:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+
+      - uses: iterative/setup-cml@v2
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
@@ -24,30 +25,35 @@ jobs:
       - name: Install dependencies
         run: make install
 
+      - name: Format
+        run: make format
+
       - name: Train model
         run: make train
 
       - name: Validate model
         run: make validate
 
-      - name: Generate report
-        run: make report
+      - name: Evaluation report (CML)
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: make eval
+
+      - name: Update branch with results
+        env:
+          NAME: ${{ secrets.USER_NAME }}
+          EMAIL: ${{ secrets.USER_EMAIL }}
+        run: make update-branch USER_NAME="${NAME:-github-actions}" USER_EMAIL="${EMAIL:-github-actions@github.com}"
+
+      - name: Copy model to Model folder
+        run: cp model.pkl Model/model.pkl
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: model-artifacts
           path: |
-            model.pkl
-            run_id.txt
+            Model/model.pkl
             mlflow.db
             Results/
           retention-days: 30
-
-      - name: Commit results to repo
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Results/ run_id.txt || true
-          git diff --staged --quiet || git commit -m "ci: update model results [skip ci]"
-          git push origin main || true
