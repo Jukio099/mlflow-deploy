@@ -1,0 +1,54 @@
+name: MLflow CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ml_pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: make install
+
+      - name: Train model
+        env:
+          MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+        run: make train
+
+      - name: Validate model
+        run: make validate
+
+      - name: Generate report
+        run: make report
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-artifacts
+          path: |
+            model.pkl
+            run_id.txt
+            Results/
+          retention-days: 30
+
+      - name: Commit results to repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Results/ run_id.txt || true
+          git diff --staged --quiet || git commit -m "ci: update model results [skip ci]"
+          git push origin main || true

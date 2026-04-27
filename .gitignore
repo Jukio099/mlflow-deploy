@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+*.pyc
+mlruns/
+model.pkl
+run_id.txt
