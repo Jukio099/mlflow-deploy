@@ -1,0 +1,3 @@
+## MLflow Results
+MSE: 2900.1936
+Run ID: 499a2357a04a4342ba7b019f56593af5
