@@ -4,7 +4,10 @@
       "Bash(gh auth *)",
       "Bash(supabase --version)",
       "Bash(gh api *)",
-      "Bash(git init *)"
+      "Bash(git init *)",
+      "Bash(gh repo *)",
+      "Bash(git branch *)",
+      "Bash(git push *)"
     ]
   }
 }

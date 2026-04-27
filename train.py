@@ -9,10 +9,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 from mlflow.models import infer_signature
 
-# --- Tracking URI: Supabase PostgreSQL (set via env var) or local fallback ---
+# --- Tracking URI: SQLite database ---
 tracking_uri = os.getenv(
     "MLFLOW_TRACKING_URI",
-    "file://" + os.path.abspath(os.path.join(os.getcwd(), "mlruns")),
+    "sqlite:///mlflow.db",
 )
 mlflow.set_tracking_uri(tracking_uri)
 print(f"Tracking URI: {mlflow.get_tracking_uri()}")

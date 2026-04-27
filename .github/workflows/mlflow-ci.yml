@@ -25,8 +25,6 @@ jobs:
         run: make install
 
       - name: Train model
-        env:
-          MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
         run: make train
 
       - name: Validate model
@@ -42,6 +40,7 @@ jobs:
           path: |
             model.pkl
             run_id.txt
+            mlflow.db
             Results/
           retention-days: 30
 
