@@ -8,7 +8,7 @@ from sklearn.metrics import mean_squared_error
 
 SUPABASE_URL = "https://peiuuworaqxesmxfowkf.supabase.co/rest/v1"
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-THRESHOLD = 500000.0  # MSE en pesos colombianos por kg
+THRESHOLD = 5_000_000_000.0  # MSE en COP² (precios ~6000-8000 COP/kg)
 
 def fetch_data():
     headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
