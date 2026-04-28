@@ -25,8 +25,8 @@ demo = gr.Interface(
         gr.Slider(minimum=2020, maximum=2026, step=1, value=2025, label="Año"),
     ],
     outputs=gr.Text(label="Precio Final Estimado (COP/kg)"),
-    title="Predictor de Precio - Subasta General Ganadera Casanare",
-    description="Predice el precio final por kg de ganado en la Subasta General de Yopal, Casanare. Ingresa las características del ganado que llevarías a subastar.",
+    title="Predictor de Precio - Subasta Tradicional Ganadera Casanare",
+    description="Predice el precio final por kg de ganado en la Subasta Tradicional de Yopal, Casanare. Ingresa las características del ganado que llevarías a subastar.",
 )
 
 if __name__ == "__main__":

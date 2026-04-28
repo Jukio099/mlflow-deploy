@@ -13,11 +13,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from mlflow.models import infer_signature
 
-from utils import fetch_subastas_general, encode_features, FEATURES, TARGET
+from utils import fetch_subastas_tradicional, encode_features, FEATURES, TARGET
 
 # --- Datos ---
-print("Cargando datos de Supabase (subastas_casanare - GENERAL)...")
-df = fetch_subastas_general()
+print("Cargando datos de Supabase (subastas_casanare - Tradicional)...")
+df = fetch_subastas_tradicional()
 df, encoders = encode_features(df)
 df = df.dropna(subset=FEATURES + [TARGET])
 print(f"Registros listos para entrenamiento: {len(df)}")
@@ -46,7 +46,7 @@ with mlflow.start_run() as run:
         "n_estimators": 200,
         "max_depth": 5,
         "learning_rate": 0.05,
-        "tipo_subasta": "GENERAL",
+        "tipo_subasta": "Tradicional",
         "n_registros": len(df),
     })
     mlflow.log_metrics({"mse": mse, "rmse": mse ** 0.5, "r2": r2})

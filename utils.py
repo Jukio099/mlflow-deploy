@@ -11,8 +11,8 @@ FEATURES = ["peso_promedio_kg", "cantidad_animales", "sexo_codigo_enc", "mes", "
 TARGET = "precio_final_kg"
 
 
-def fetch_subastas_general() -> pd.DataFrame:
-    """Descarga registros de Subasta GENERAL desde Supabase y aplica filtros."""
+def fetch_subastas_tradicional() -> pd.DataFrame:
+    """Descarga registros de Subasta Tradicional desde Supabase con filtro server-side."""
     key = os.getenv("SUPABASE_KEY")
     headers = {"Authorization": f"Bearer {key}", "apikey": key}
     records, offset = [], 0
@@ -22,7 +22,8 @@ def fetch_subastas_general() -> pd.DataFrame:
             f"{SUPABASE_URL}/subastas_casanare",
             headers=headers,
             params={
-                "select": "fecha_subasta,tipo_subasta,sexo_codigo,cantidad_animales,peso_promedio_kg,precio_final_kg",
+                "select": "fecha_subasta,sexo_codigo,cantidad_animales,peso_promedio_kg,precio_final_kg",
+                "tipo_subasta": "eq.Tradicional",
                 "precio_final_kg": "not.is.null",
                 "peso_promedio_kg": "not.is.null",
                 "limit": 1000,
@@ -30,9 +31,11 @@ def fetch_subastas_general() -> pd.DataFrame:
             },
         )
         batch = r.json()
-        if not batch:
+        if not batch or not isinstance(batch, list):
             break
         records.extend(batch)
+        if len(batch) < 1000:
+            break
         offset += 1000
 
     df = pd.DataFrame(records)
@@ -41,8 +44,7 @@ def fetch_subastas_general() -> pd.DataFrame:
     for col in ["peso_promedio_kg", "cantidad_animales", "precio_final_kg"]:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
-    # Filtrar solo Subasta GENERAL y precios realistas (COP/kg)
-    df = df[df["tipo_subasta"].str.upper() == "GENERAL"]
+    # Filtrar precios realistas para ganado en COP/kg
     df = df[(df[TARGET] >= 3000) & (df[TARGET] <= 25000)]
 
     # Features temporales desde fecha

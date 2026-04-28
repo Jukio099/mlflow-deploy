@@ -10,7 +10,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 
-from utils import fetch_subastas_general, encode_features, FEATURES, TARGET
+from utils import fetch_subastas_tradicional, encode_features, FEATURES, TARGET
 
 # Umbrales de calidad aceptables para el modelo sin precio_base_kg
 MSE_THRESHOLD = 5_000_000.0   # RMSE ≈ 2236 COP/kg
@@ -32,7 +32,7 @@ model = mlflow.sklearn.load_model(f"runs:/{run_id}/model")
 
 # --- Datos externos desde Supabase ---
 print("Cargando datos de validación desde Supabase...")
-df = fetch_subastas_general()
+df = fetch_subastas_tradicional()
 
 # Cargar encoders entrenados para codificar igual que en train
 import joblib
