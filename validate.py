@@ -19,7 +19,7 @@ def fetch_data():
             f"{SUPABASE_URL}/subastas_casanare",
             headers=headers,
             params={
-                "select": "fecha_subasta,tipo_subasta,martillo,sexo_codigo,cantidad_animales,peso_promedio_kg,precio_final_kg",
+                "select": "fecha_subasta,tipo_subasta,sexo_codigo,cantidad_animales,peso_promedio_kg,precio_final_kg",
                 "precio_final_kg": "not.is.null",
                 "peso_promedio_kg": "not.is.null",
                 "limit": limit,
@@ -40,17 +40,16 @@ df = fetch_data()
 for col in ["peso_promedio_kg", "cantidad_animales", "precio_base_kg", "precio_final_kg"]:
     df[col] = pd.to_numeric(df[col], errors="coerce")
 
+df = df[df["tipo_subasta"].str.upper() == "GENERAL"]
 df = df[(df["precio_final_kg"] >= 3000) & (df["precio_final_kg"] <= 25000)]
 
 df["fecha_subasta"] = pd.to_datetime(df["fecha_subasta"], errors="coerce")
 df["mes"] = df["fecha_subasta"].dt.month
 df["anio"] = df["fecha_subasta"].dt.year
 
-for col in ["tipo_subasta", "sexo_codigo", "martillo"]:
-    df[f"{col}_enc"] = encoders[col].transform(df[col].fillna("Desconocido").astype(str))
+df["sexo_codigo_enc"] = encoders["sexo_codigo"].transform(df["sexo_codigo"].fillna("Desconocido").astype(str))
 
-features = ["peso_promedio_kg", "cantidad_animales",
-            "tipo_subasta_enc", "sexo_codigo_enc", "martillo_enc", "mes", "anio"]
+features = ["peso_promedio_kg", "cantidad_animales", "sexo_codigo_enc", "mes", "anio"]
 
 df = df.dropna(subset=features + ["precio_final_kg"])
 X, y = df[features], df["precio_final_kg"]

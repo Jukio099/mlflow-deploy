@@ -21,7 +21,7 @@ def fetch_data():
             f"{SUPABASE_URL}/subastas_casanare",
             headers=headers,
             params={
-                "select": "fecha_subasta,tipo_subasta,martillo,sexo_codigo,cantidad_animales,peso_promedio_kg,precio_final_kg",
+                "select": "fecha_subasta,sexo_codigo,cantidad_animales,peso_promedio_kg,precio_final_kg,tipo_subasta",
                 "precio_final_kg": "not.is.null",
                 "peso_promedio_kg": "not.is.null",
                 "limit": limit,
@@ -44,6 +44,8 @@ for col in ["peso_promedio_kg", "cantidad_animales", "precio_base_kg", "precio_f
     df[col] = pd.to_numeric(df[col], errors="coerce")
 
 # Filtrar outliers: precios realistas para ganado en COP/kg (3000 - 25000)
+# Solo subasta GENERAL
+df = df[df["tipo_subasta"].str.upper() == "GENERAL"]
 df = df[(df["precio_final_kg"] >= 3000) & (df["precio_final_kg"] <= 25000)]
 print(f"Registros tras filtrar outliers: {len(df)}")
 
@@ -54,16 +56,11 @@ df["anio"] = df["fecha_subasta"].dt.year
 
 # Codificar categóricas
 encoders = {}
-for col in ["tipo_subasta", "sexo_codigo", "martillo"]:
-    le = LabelEncoder()
-    df[f"{col}_enc"] = le.fit_transform(df[col].fillna("Desconocido").astype(str))
-    encoders[col] = le
+le = LabelEncoder()
+df["sexo_codigo_enc"] = le.fit_transform(df["sexo_codigo"].fillna("Desconocido").astype(str))
+encoders["sexo_codigo"] = le
 
-features = [
-    "peso_promedio_kg", "cantidad_animales",
-    "tipo_subasta_enc", "sexo_codigo_enc", "martillo_enc",
-    "mes", "anio"
-]
+features = ["peso_promedio_kg", "cantidad_animales", "sexo_codigo_enc", "mes", "anio"]
 
 df = df.dropna(subset=features + ["precio_final_kg"])
 X = df[features]
@@ -86,6 +83,7 @@ with mlflow.start_run() as run:
     mlflow.log_param("model_type", "GradientBoosting")
     mlflow.log_param("n_estimators", 200)
     mlflow.log_param("max_depth", 5)
+    mlflow.log_param("tipo_subasta", "GENERAL")
     mlflow.log_param("n_registros", len(df))
     mlflow.log_metric("mse", mse)
     mlflow.log_metric("r2", r2)
