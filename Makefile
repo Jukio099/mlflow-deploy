@@ -27,12 +27,12 @@ update-branch:
 
 hf-login:
 	pip install -U "huggingface_hub[cli]"
-	huggingface-cli login --token $(HF) --add-to-git-credential
+	hf auth login --token $(HF)
 
 push-hub:
-	huggingface-cli upload JKO9003/Drug-Classification ./App --repo-type=space --commit-message="Sync App files"
-	huggingface-cli upload JKO9003/Drug-Classification ./Model /Model --repo-type=space --commit-message="Sync Model"
-	huggingface-cli upload JKO9003/Drug-Classification ./Results /Metrics --repo-type=space --commit-message="Sync Metrics"
+	hf upload JKO9003/Drug-Classification ./App . --repo-type=space --commit-message="Sync App files"
+	hf upload JKO9003/Drug-Classification ./Model Model --repo-type=space --commit-message="Sync Model"
+	hf upload JKO9003/Drug-Classification ./Results Metrics --repo-type=space --commit-message="Sync Metrics"
 
 deploy: hf-login push-hub
 
