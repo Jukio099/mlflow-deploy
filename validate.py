@@ -8,8 +8,8 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 SUPABASE_URL = "https://peiuuworaqxesmxfowkf.supabase.co/rest/v1"
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-MSE_THRESHOLD = 2_000_000.0  # RMSE ~1414 COP/kg
-R2_THRESHOLD = 0.80
+MSE_THRESHOLD = 5_000_000.0  # RMSE ~2236 COP/kg sin precio_base
+R2_THRESHOLD = 0.30
 
 def fetch_data():
     headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "apikey": SUPABASE_KEY}
@@ -19,7 +19,7 @@ def fetch_data():
             f"{SUPABASE_URL}/subastas_casanare",
             headers=headers,
             params={
-                "select": "fecha_subasta,tipo_subasta,martillo,sexo_codigo,cantidad_animales,peso_promedio_kg,precio_base_kg,precio_final_kg",
+                "select": "fecha_subasta,tipo_subasta,martillo,sexo_codigo,cantidad_animales,peso_promedio_kg,precio_final_kg",
                 "precio_final_kg": "not.is.null",
                 "peso_promedio_kg": "not.is.null",
                 "limit": limit,
@@ -41,7 +41,6 @@ for col in ["peso_promedio_kg", "cantidad_animales", "precio_base_kg", "precio_f
     df[col] = pd.to_numeric(df[col], errors="coerce")
 
 df = df[(df["precio_final_kg"] >= 3000) & (df["precio_final_kg"] <= 25000)]
-df = df[(df["precio_base_kg"] >= 1000) & (df["precio_base_kg"] <= 25000)]
 
 df["fecha_subasta"] = pd.to_datetime(df["fecha_subasta"], errors="coerce")
 df["mes"] = df["fecha_subasta"].dt.month
@@ -50,7 +49,7 @@ df["anio"] = df["fecha_subasta"].dt.year
 for col in ["tipo_subasta", "sexo_codigo", "martillo"]:
     df[f"{col}_enc"] = encoders[col].transform(df[col].fillna("Desconocido").astype(str))
 
-features = ["peso_promedio_kg", "cantidad_animales", "precio_base_kg",
+features = ["peso_promedio_kg", "cantidad_animales",
             "tipo_subasta_enc", "sexo_codigo_enc", "martillo_enc", "mes", "anio"]
 
 df = df.dropna(subset=features + ["precio_final_kg"])

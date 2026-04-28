@@ -21,7 +21,7 @@ def fetch_data():
             f"{SUPABASE_URL}/subastas_casanare",
             headers=headers,
             params={
-                "select": "fecha_subasta,tipo_subasta,martillo,sexo_codigo,cantidad_animales,peso_promedio_kg,precio_base_kg,precio_final_kg",
+                "select": "fecha_subasta,tipo_subasta,martillo,sexo_codigo,cantidad_animales,peso_promedio_kg,precio_final_kg",
                 "precio_final_kg": "not.is.null",
                 "peso_promedio_kg": "not.is.null",
                 "limit": limit,
@@ -45,7 +45,6 @@ for col in ["peso_promedio_kg", "cantidad_animales", "precio_base_kg", "precio_f
 
 # Filtrar outliers: precios realistas para ganado en COP/kg (3000 - 25000)
 df = df[(df["precio_final_kg"] >= 3000) & (df["precio_final_kg"] <= 25000)]
-df = df[(df["precio_base_kg"] >= 1000) & (df["precio_base_kg"] <= 25000)]
 print(f"Registros tras filtrar outliers: {len(df)}")
 
 # Features temporales
@@ -61,7 +60,7 @@ for col in ["tipo_subasta", "sexo_codigo", "martillo"]:
     encoders[col] = le
 
 features = [
-    "peso_promedio_kg", "cantidad_animales", "precio_base_kg",
+    "peso_promedio_kg", "cantidad_animales",
     "tipo_subasta_enc", "sexo_codigo_enc", "martillo_enc",
     "mes", "anio"
 ]
