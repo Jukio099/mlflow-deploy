@@ -1,3 +1,5 @@
 ## Model Metrics
-MSE: 2900.1936
-Run ID: af562d833e0f45a9aaab4993262b09dc
+MSE: 2897394734.58
+R2: 0.9795
+Registros: 42323
+Run ID: a31b37653b204f92b9610c14cd600ea4
