@@ -4,8 +4,8 @@ import numpy as np
 import os
 
 base = os.path.dirname(__file__)
-model = joblib.load(os.path.join(base, "..", "Model", "model.pkl"))
-encoders = joblib.load(os.path.join(base, "..", "Model", "encoders.pkl"))
+model = joblib.load(os.path.join(base, "Model", "model.pkl"))
+encoders = joblib.load(os.path.join(base, "Model", "encoders.pkl"))
 
 sexos = list(encoders["sexo_codigo"].classes_)
 
