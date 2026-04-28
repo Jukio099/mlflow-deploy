@@ -30,9 +30,9 @@ hf-login:
 	hf auth login --token $(HF)
 
 push-hub:
-	hf upload JKO9003/Drug-Classification ./App . --repo-type=space --commit-message="Sync App files"
-	hf upload JKO9003/Drug-Classification ./Model Model --repo-type=space --commit-message="Sync Model"
-	hf upload JKO9003/Drug-Classification ./Results Metrics --repo-type=space --commit-message="Sync Metrics"
+	hf upload JKO9003/predictor-subastas-casanare ./App . --repo-type=space --commit-message="Sync App files"
+	hf upload JKO9003/predictor-subastas-casanare ./Model Model --repo-type=space --commit-message="Sync Model"
+	hf upload JKO9003/predictor-subastas-casanare ./Results Metrics --repo-type=space --commit-message="Sync Metrics"
 
 deploy: hf-login push-hub
 
