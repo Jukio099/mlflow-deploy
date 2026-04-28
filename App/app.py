@@ -3,27 +3,32 @@ import joblib
 import numpy as np
 import os
 
-model_path = os.path.join(os.path.dirname(__file__), "..", "Model", "model.pkl")
-model = joblib.load(model_path)
+base = os.path.dirname(__file__)
+model = joblib.load(os.path.join(base, "..", "Model", "model.pkl"))
+encoders = joblib.load(os.path.join(base, "..", "Model", "encoders.pkl"))
 
-feature_names = [
-    "age", "sex", "bmi", "bp",
-    "s1", "s2", "s3", "s4", "s5", "s6"
-]
+tipos = list(encoders["tipo"].classes_)
+sexos = list(encoders["sexo"].classes_)
 
-def predict(*args):
-    features = np.array(args).reshape(1, -1)
-    prediction = model.predict(features)[0]
-    return round(float(prediction), 2)
-
-inputs = [gr.Number(label=name) for name in feature_names]
+def predecir(tipo_subasta, sexo_codigo, cantidad_animales, peso_promedio_kg, precio_base_kg):
+    tipo_enc = encoders["tipo"].transform([tipo_subasta])[0]
+    sexo_enc = encoders["sexo"].transform([sexo_codigo])[0]
+    X = np.array([[peso_promedio_kg, cantidad_animales, precio_base_kg, tipo_enc, sexo_enc]])
+    precio = model.predict(X)[0]
+    return f"${precio:,.0f} COP/kg"
 
 demo = gr.Interface(
-    fn=predict,
-    inputs=inputs,
-    outputs=gr.Number(label="Diabetes Progression Score"),
-    title="Diabetes Progression Predictor",
-    description="Modelo de regresión lineal entrenado con el dataset de diabetes de scikit-learn.",
+    fn=predecir,
+    inputs=[
+        gr.Dropdown(choices=tipos, label="Tipo de Subasta"),
+        gr.Dropdown(choices=sexos, label="Sexo del Ganado"),
+        gr.Number(label="Cantidad de Animales", value=10),
+        gr.Number(label="Peso Promedio (kg)", value=350),
+        gr.Number(label="Precio Base (COP/kg)", value=6000),
+    ],
+    outputs=gr.Text(label="Precio Final Estimado (COP/kg)"),
+    title="Predictor de Precio - Subasta Ganadera Casanare",
+    description="Predice el precio final por kg de ganado en subastas de Yopal, Casanare, basado en datos reales.",
 )
 
 if __name__ == "__main__":

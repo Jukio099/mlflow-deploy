@@ -29,9 +29,13 @@ jobs:
         run: make format
 
       - name: Train model
+        env:
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: make train
 
       - name: Validate model
+        env:
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: make validate
 
       - name: Evaluation report (CML)
