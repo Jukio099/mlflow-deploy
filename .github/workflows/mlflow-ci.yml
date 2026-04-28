@@ -46,7 +46,7 @@ jobs:
         run: make update-branch USER_NAME="${NAME:-github-actions}" USER_EMAIL="${EMAIL:-github-actions@github.com}"
 
       - name: Copy model to Model folder
-        run: cp model.pkl Model/model.pkl
+        run: mkdir -p Model && cp model.pkl Model/model.pkl
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
